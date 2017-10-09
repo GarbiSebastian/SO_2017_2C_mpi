@@ -1,0 +1,59 @@
+
+# Created by https://www.gitignore.io/api/c++
+
+### C++ ###
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+### NetBeans ###
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# End of https://www.gitignore.io/api/c++
+/test-1
+/test-2
+/test-3
+/test-4
+/test-5
+/test-6
+/medidor
+/.~*
+/corpus-*
+/salida-test*
+/tiempos-*
+/palabras-*
+/archivos/
