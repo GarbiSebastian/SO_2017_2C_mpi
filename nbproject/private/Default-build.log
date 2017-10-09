@@ -1,0 +1,4 @@
+/usr/bin/mpic++ -Wall -g -I/usr/include -o dist_hashmap consola.cpp main.cpp nodo.cpp HashMap.cpp
+make: /usr/bin/mpic++: No se encontró el programa
+Makefile:15: fallo en las instrucciones para el objetivo 'dist_hashmap'
+make: *** [dist_hashmap] Error 127
