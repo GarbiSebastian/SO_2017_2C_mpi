@@ -7,10 +7,10 @@
 using namespace std;
 
 void nodo(unsigned int rank) {
-    printf("Soy un nodo. Mi rank es %d \n", rank);
+    printf("Soy un nodo. Mi rank es %u \n", rank);
 
     // TODO: Implementar
-    // Creo un HashMap loal
+    // Creo un HashMap local
 
     while (true) {
         // TODO: Procesar mensaje
