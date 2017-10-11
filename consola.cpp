@@ -59,9 +59,12 @@ static void member(string key) {
 
 // Esta función suma uno a *key* en algún nodo
 static void addAndInc(string key) {
-
     // TODO: Implementar
-
+    string mensaje = CMD_ADD+(" "+key);
+    unsigned int size = mensaje.length()+ 1;
+    char *buffer = new char[size];
+    strcpy(buffer, mensaje.c_str());
+    MPI_Bcast(buffer,size,MPI_CHAR,0,MPI_COMM_WORLD);
     cout << "Agregado: " << key << endl;
 }
 

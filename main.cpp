@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     // Control del buffering: sin buffering
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
-    printf("[MPI] Lanzando proceso %u\n", rank);
+    printf("[MPI] Lanzando proceso %d\n", rank);
 
     if (rank == 0) {
         // Soy el proceso consola

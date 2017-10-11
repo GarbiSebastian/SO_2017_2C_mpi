@@ -18,3 +18,6 @@ clean:
 	rm -f $(BIN)
 
 new: clean all
+
+run: all
+	mpiexec -np 8 ./dist_hashmap
