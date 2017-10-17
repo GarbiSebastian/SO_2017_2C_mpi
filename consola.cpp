@@ -21,12 +21,45 @@ using namespace std;
 
 static unsigned int np;
 
+
 // Crea un ConcurrentHashMap distribuido
 static void load(list<string> params) {
-
+	int buffer_codigo[1];
+	buffer_codigo[1] = CODIGO_LOAD;
+	MPI_Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA,MPI_COMM_WORLD);
+	
+	
+	
+	unsigned int contador = np-1;
+	
     for (list<string>::iterator it=params.begin(); it != params.end(); ++it) {
-       // TODO: Implementar
+		if(contador > 0){
+			string archivo = *it;
+			size_t size = archivo.length();
+			
+		/*	
+		 * send no bloqueante
+		 * 
+		 * 	int status = MPI_Ssend(
+				archivo.c_str(),
+				size,
+				MPI_CHAR,
+				indice_nodo+1,
+				1, 
+				MPI_COMM_WORLD
+			);
+			break;*/
+			contador--;
+		}else{
+			//recv MPI_ANY_SOURCE bloqueante
+			//le mandas a ese
+		}
     }
+    while(contador < np-1){
+		//recv MPI_ANY_SOURCE bloqueante
+		contador++;
+	}
+   
 
     cout << "La listá esta procesada" << endl;
 }
@@ -65,6 +98,9 @@ static void addAndInc(string key) {
     char *buffer = new char[size];
     strcpy(buffer, mensaje.c_str());
     MPI_Bcast(buffer,size,MPI_CHAR,0,MPI_COMM_WORLD);
+    // recv MPI_ANY_SOURCE 
+    // send status.MPI_SOURCE procesalo
+    
     cout << "Agregado: " << key << endl;
 }
 
@@ -160,7 +196,7 @@ void consola(unsigned int np_param) {
     printf("  "CMD_MEMBER" <string>\n");
     printf("  "CMD_MAXIMUM"\n");
     printf("  "CMD_SQUIT"|"CMD_QUIT"\n");
-
+    
     bool fin = false;
     while (!fin) {
         printf("> ");

@@ -27,9 +27,18 @@ void nodo(unsigned int rank) {
     while (true) {
         // TODO: Procesar mensaje
         //Recibo accion
-        MPI_Bcast(buffer,BUFFER_SIZE,MPI_CHAR,0,MPI_COMM_WORLD);
-        archivo << buffer << endl;
-        buffer_length = strlen(buffer);
+        int status = MPI_Bcast(buffer,BUFFER_SIZE,MPI_INT,RANK_CONSOLA,MPI_COMM_WORLD));
+            switch(buffer[0]){
+			case CODIGO_LOAD:
+				//llamar load
+			break;
+			case CODIGO_ADDANDINC:
+				//
+			break;
+			//...
+		}
+        
+        
         
         break;
     }
