@@ -9,6 +9,10 @@
 #include "consola.hpp"
 #include "HashMap.hpp"
 #include "mpi.h"
+#include "nodo.hpp"
+#include <ostream>
+#include <fstream>
+#include "timestamp.hpp"
 
 using namespace std;
 
@@ -20,63 +24,88 @@ using namespace std;
 #define CMD_SQUIT   "q"
 
 static unsigned int np;
-
+ofstream archivoLogConsola;
+HashMap* hashMapCentral;
 
 // Crea un ConcurrentHashMap distribuido
 static void load(list<string> params) {
+    unsigned int nodosLibres = np-1;
 	int buffer_codigo[1];
-	buffer_codigo[1] = CODIGO_LOAD;
-	MPI_Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA,MPI_COMM_WORLD);
-	
-	
-	
-	unsigned int contador = np-1;
-	
+	buffer_codigo[0] = CODIGO_LOAD;
+    char buffer[nodosLibres][BUFFER_SIZE];
+    unsigned int rank_nodo;
+    unsigned int indice_nodo;
+    //Le aviso a todos los nodos que vamos a hacer un "LOAD"
+    MPI::COMM_WORLD.Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA);
     for (list<string>::iterator it=params.begin(); it != params.end(); ++it) {
-		if(contador > 0){
-			string archivo = *it;
-			size_t size = archivo.length();
-			
-		/*	
-		 * send no bloqueante
-		 * 
-		 * 	int status = MPI_Ssend(
-				archivo.c_str(),
-				size,
-				MPI_CHAR,
-				indice_nodo+1,
-				1, 
-				MPI_COMM_WORLD
-			);
-			break;*/
-			contador--;
-		}else{
-			//recv MPI_ANY_SOURCE bloqueante
-			//le mandas a ese
+        string archivo = *it;
+    	size_t size = archivo.length();
+		if(nodosLibres > 0){//Envío un archivo a cada nodo
+            rank_nodo = np - nodosLibres;
+            indice_nodo = rank_nodo -1;
+			strcpy(buffer[indice_nodo], archivo.c_str());
+            MPI::COMM_WORLD.Isend(buffer[indice_nodo],size,MPI_CHAR,rank_nodo,TAG_ARCHIVO);
+			nodosLibres--;
+		}else{//cuando ya le mandé uno a cada nodo, espero a que termine de procesar algún nodo y le mando a ese el siguiente archivo
+            MPI::Status status;
+            //Recibo el mensaje de un nodo que terminó
+            MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,TAG_TERMINE,status);
+            int rank_nodo = status.Get_source();
+            indice_nodo = rank_nodo -1;
+            strcpy(buffer[indice_nodo], archivo.c_str());
+            MPI::COMM_WORLD.Isend(buffer[indice_nodo],size,MPI_CHAR,rank_nodo,TAG_ARCHIVO);
 		}
     }
-    while(contador < np-1){
-		//recv MPI_ANY_SOURCE bloqueante
-		contador++;
+    while(nodosLibres < np-1){
+        MPI::Status status;
+        //Espero a que todos terminen de procesar su archivo
+		MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,TAG_TERMINE,status);
+        archivoLogConsola << "[" << timestamp() << "][consola] " << "Reenvio a: " << status.Get_source() << endl;
+		nodosLibres++;
 	}
-   
-
+    //ENVÍO A TODOS UN MENSAJE PARA TERMINAR EL LOAD
+    for(unsigned int i=0;i < nodosLibres; i++){
+        rank_nodo = i+1;
+        MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,rank_nodo,TAG_END);
+    }
     cout << "La listá esta procesada" << endl;
 }
 
 // Esta función debe avisar a todos los nodos que deben terminar
 static void quit() {
-    // TODO: Implementar
+    int buffer_codigo[1];
+	buffer_codigo[0] = CODIGO_QUIT;
+    MPI::COMM_WORLD.Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA);
+    cout << "Finalizamos ejecución" << endl;
 }
 
 // Esta función calcula el máximo con todos los nodos
 static void maximum() {
     pair<string, unsigned int> result;
-
-    // TODO: Implementar
-    string str("a");
-    result = make_pair(str,10);
-
+    hashMapCentral = new HashMap();
+    int buffer_codigo[1];
+	buffer_codigo[0] = CODIGO_MAXIMUM;
+    //ENVÍO LA ORDEN DE MAXIMUM
+    MPI::COMM_WORLD.Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA);
+    char buffer[BUFFER_SIZE];
+    
+    //RECIBO PALABRAS
+    MPI::Status status;
+    unsigned int nodos_restantes_por_terminar = np-1;
+    while(nodos_restantes_por_terminar > 0){
+        MPI::COMM_WORLD.Recv(buffer,BUFFER_SIZE,MPI_CHAR,MPI_ANY_SOURCE,MPI_ANY_TAG,status);
+        int tag = status.Get_tag();
+        if(tag == TAG_TERMINE){
+            nodos_restantes_por_terminar--;
+        }else{
+            int size_leido = status.Get_count(MPI_CHAR);
+            string palabra(buffer,size_leido);
+            hashMapCentral->addAndInc(palabra);
+        }
+    }
+    
+    result = hashMapCentral->maximum();
+    delete hashMapCentral;
     cout << "El máximo es <" << result.first <<"," << result.second << ">" << endl;
 }
 
@@ -189,6 +218,9 @@ static bool procesar_comandos() {
 }
 
 void consola(unsigned int np_param) {
+    //LOG
+    archivoLogConsola.open("logs/log-consola");
+    
     np = np_param;
     printf("Comandos disponibles:\n");
     printf("  "CMD_LOAD" <arch_1> <arch_2> ... <arch_n>\n");

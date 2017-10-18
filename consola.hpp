@@ -11,6 +11,11 @@
 
 #define RANK_CONSOLA 0
 
+#define TAG_END 0
+#define TAG_ARCHIVO 1
+#define TAG_TERMINE 2
+#define TAG_PALABRA 3
+
 /* Función que maneja la consola.
  * Recibe la cantidad total de nodos.
  */

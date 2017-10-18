@@ -6,7 +6,7 @@ CFLAGS+= -Wall -g $(INCL)
 CC=gcc
 MPICC=  $(MPIROOT)/bin/mpic++
 INCL= -I$(MPIROOT)/include
-SRCS= consola.cpp main.cpp nodo.cpp HashMap.cpp
+SRCS= consola.cpp main.cpp nodo.cpp HashMap.cpp timestamp.cpp
 BIN= dist_hashmap
 
 all: dist_hashmap
@@ -21,3 +21,10 @@ new: clean all
 
 run: all
 	mpiexec -np 8 ./dist_hashmap
+
+generador: generador.cpp
+	g++ -std=c++11 -o $@ generador.cpp
+
+
+    
+    

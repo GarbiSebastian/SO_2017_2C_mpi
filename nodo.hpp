@@ -11,6 +11,11 @@
 
 #define RANK_CONSOLA 0
 
+#define TAG_END 0
+#define TAG_ARCHIVO 1
+#define TAG_TERMINE 2
+#define TAG_PALABRA 3
+
 /* Función que maneja un nodo.
  * Recibe el rank del nodo.
  */
@@ -19,5 +24,11 @@ void nodo(unsigned int rank);
 /* Simula un tiempo de procesamiento no determinístico.
  */
 void trabajarArduamente();
+
+void nodo_load();
+
+void nodo_maximum();
+
+void nodo_quit();
 
 #endif  /* _NODO_H */
