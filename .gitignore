@@ -53,8 +53,6 @@ nbdist/
 /medidor
 /.~*
 /corpus-*
-/salida-test*
-/tiempos-*
-/palabras-*
 /archivos/
+/logs/
 /dist_hashmap
