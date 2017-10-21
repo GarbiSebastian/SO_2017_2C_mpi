@@ -111,23 +111,33 @@ static void maximum() {
 
 // Esta función busca la existencia de *key* en algún nodo
 static void member(string key) {
-	
+    unsigned int size = key.length();
+    
+    if(size > BUFFER_SIZE){
+        cerr << "El string supera el largo máximo";
+        return;
+    }
+    
     bool esta = false;
     int buffer_codigo[1];
 	buffer_codigo[0] = CODIGO_MEMBER;
     //Le aviso a todos los nodos que vamos a hacer un "MEMBER"
     MPI::COMM_WORLD.Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA);
     
-    string mensaje = CMD_ADD+(" "+key);
-    unsigned int size = mensaje.length()+ 1;
-    char *buffer = new char[size];
-    strcpy(buffer, mensaje.c_str());
+    char buffer[BUFFER_SIZE];
+    strcpy(buffer, key.c_str());
+    if(size < BUFFER_SIZE){
+        buffer[size]='\0';//terminación NULL del string;
+        size = size+1;
+    }
+    //Envío a todos la palabra buscada
     MPI::COMM_WORLD.Bcast(buffer,size,MPI_CHAR,RANK_CONSOLA);
     
     MPI::Status status;
     for(unsigned int i=0;i < np-1; i++){
 		MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,MPI_ANY_TAG,status);
 		int tag = status.Get_tag();
+        archivoLogConsola << "[" << timestamp() << "][consola] " << "nodo: " << status.Get_source() << " respondió: " << tag << endl;
 		if (tag == TAG_ENCONTRE) {
 			esta = true;
 		}
@@ -138,37 +148,25 @@ static void member(string key) {
 
 // Esta función suma uno a *key* en algún nodo
 static void addAndInc(string key) {
-    
-    unsigned int nodosLibres = np-1;
-    unsigned int indice_nodo;
-    string mensaje = CMD_ADD+(" "+key);
-    unsigned int size = mensaje.length()+ 1;
-    char buffer[nodosLibres][BUFFER_SIZE]; 
+    unsigned int cantNodos = np-1;
+    unsigned int size = key.length();
+    char buffer[BUFFER_SIZE]; 
     int buffer_codigo[1];
-	buffer_codigo[0] = CODIGO_ADDANDINC;
+    buffer_codigo[0] = CODIGO_ADDANDINC;
     //Le aviso a todos los nodos que vamos a hacer un "ADD"
     MPI::COMM_WORLD.Bcast(buffer_codigo,1,MPI_INT,RANK_CONSOLA);
-            
+    
     MPI::Status status;
     //Recibo el mensaje del nodo que conteste primero 
     MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,TAG_PROCESALO,status);
     int rank_nodo = status.Get_source();
-    indice_nodo = rank_nodo -1;
-    strcpy(buffer[indice_nodo], mensaje.c_str());
-    MPI::COMM_WORLD.Isend(buffer[indice_nodo],size,MPI_CHAR,rank_nodo,TAG_PROCESALO);
-    
-    unsigned int indice_nodo_en_uso = indice_nodo;
-    
-    for(unsigned int i=0;i < np-1; i++){
-        if (i != indice_nodo_en_uso) {
-			rank_nodo = i+1;
-			indice_nodo = rank_nodo -1;
-			MPI::COMM_WORLD.Isend(buffer[indice_nodo],size,MPI_CHAR,rank_nodo,TAG_END);
-		}
+    strcpy(buffer, key.c_str());
+    MPI::COMM_WORLD.Send(buffer,size,MPI_CHAR,rank_nodo,TAG_PROCESALO);
+    //recibo el resto de los nodos y les aviso que no van a procesar
+    for(unsigned int i=0 ;i < cantNodos-1; i++){
+        MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,TAG_PROCESALO,status);
+        MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,status.Get_source(),TAG_END);
     }
-    
-    MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,TAG_TERMINE,status);
-      
     cout << "Agregado: " << key << endl;
 }
 

@@ -15,6 +15,9 @@
 #define TAG_ARCHIVO 1
 #define TAG_TERMINE 2
 #define TAG_PALABRA 3
+#define TAG_ENCONTRE 4
+#define TAG_PROCESALO 5
+
 
 /* Función que maneja la consola.
  * Recibe la cantidad total de nodos.

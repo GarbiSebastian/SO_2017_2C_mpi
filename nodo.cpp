@@ -7,6 +7,7 @@
 #include <ostream>
 #include <fstream>
 #include "timestamp.hpp"
+#include <sstream>
 
 using namespace std;
 
@@ -40,12 +41,13 @@ void nodo(unsigned int rank) {
 				nodo_add();
                 break;
             case CODIGO_MEMBER:
-		nodo_member();
+                nodo_member();
                 break;
             case CODIGO_MAXIMUM:
                 nodo_maximum();
                 break;
             case CODIGO_QUIT:
+                archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Ejecutamos QUIT" << endl;
                 continuar=false;
                 break;
 		}
@@ -56,13 +58,14 @@ void nodo(unsigned int rank) {
 }
 
 void nodo_load(){
+    archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Ejecutamos LOAD" << endl;
     MPI::Status status;
     //Buffer de datos
     char buffer[BUFFER_SIZE];
     //Recibo el nobre de un archivo
     MPI::COMM_WORLD.Recv(buffer,BUFFER_SIZE,MPI_CHAR,RANK_CONSOLA,MPI_ANY_TAG,status);
     int tag = status.Get_tag();
-    while(tag != TAG_END){
+    while(tag == TAG_ARCHIVO){
         int size_leido = status.Get_count(MPI_CHAR);
         string archivo(buffer,size_leido);
         archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Proceso archivo: " <<  archivo << endl;
@@ -75,8 +78,8 @@ void nodo_load(){
     archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "Termine LOAD" << endl;
 }
 
-
 void nodo_maximum(){
+    archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Ejecutamos MAXIMUM" << endl;
     char buffer[BUFFER_SIZE];
     HashMap::iterator it = mi_hashmap.begin();
     trabajarArduamente();
@@ -92,30 +95,36 @@ void nodo_maximum(){
 }
 
 void nodo_add(){
+    archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Ejecutamos ADD" << endl;
 	MPI::Status status;
     char buffer[BUFFER_SIZE];
     MPI::COMM_WORLD.Send(buffer,0,MPI_CHAR,RANK_CONSOLA,TAG_PROCESALO);
     //Recibo si agrego la key
     MPI::COMM_WORLD.Recv(buffer,BUFFER_SIZE,MPI_CHAR,RANK_CONSOLA,MPI_ANY_TAG,status);
     int tag = status.Get_tag();
-	if(tag != TAG_END){
+	if(tag == TAG_PROCESALO){
         int size_leido = status.Get_count(MPI_CHAR);
         string key(buffer,size_leido);
+        archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "Agrego: '" << key << "' de tamaño: " << size_leido << endl;
         mi_hashmap.addAndInc(key);
-        MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
+        //MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
 	}
 }
 
-void nodo_member(){	
-	MPI::Status status;
+void nodo_member(){
+    archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " << "Ejecutamos MEMBER" << endl;
 	char buffer[BUFFER_SIZE];
 	MPI::COMM_WORLD.Bcast(buffer,BUFFER_SIZE,MPI_CHAR,RANK_CONSOLA);
-	int size_leido = status.Get_count(MPI_CHAR);
-	string key(buffer,size_leido);
+    stringstream palabra;
+    palabra << buffer;
+    string key = palabra.str();
+    archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "Busco " << key << endl;
 	bool esta = mi_hashmap.member(key);
 	if (esta == true) {
+        archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "La tengo " << key << endl;
 		MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_ENCONTRE);
 	} else {
+        archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "No la tengo " << key << endl;
 		MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
 	}
 }
