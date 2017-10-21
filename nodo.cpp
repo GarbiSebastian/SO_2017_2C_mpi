@@ -37,9 +37,10 @@ void nodo(unsigned int rank) {
 				nodo_load();
                 break;
 			case CODIGO_ADDANDINC:
-				//
+				nodo_add();
                 break;
             case CODIGO_MEMBER:
+		nodo_member();
                 break;
             case CODIGO_MAXIMUM:
                 nodo_maximum();
@@ -88,6 +89,35 @@ void nodo_maximum(){
         it++;
     }
     MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);    
+}
+
+void nodo_add(){
+	MPI::Status status;
+    char buffer[BUFFER_SIZE];
+    MPI::COMM_WORLD.Send(buffer,0,MPI_CHAR,RANK_CONSOLA,TAG_PROCESALO);
+    //Recibo si agrego la key
+    MPI::COMM_WORLD.Recv(buffer,BUFFER_SIZE,MPI_CHAR,RANK_CONSOLA,MPI_ANY_TAG,status);
+    int tag = status.Get_tag();
+	if(tag != TAG_END){
+        int size_leido = status.Get_count(MPI_CHAR);
+        string key(buffer,size_leido);
+        mi_hashmap.addAndInc(key);
+        MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
+	}
+}
+
+void nodo_member(){	
+	MPI::Status status;
+	char buffer[BUFFER_SIZE];
+	MPI::COMM_WORLD.Bcast(buffer,BUFFER_SIZE,MPI_CHAR,RANK_CONSOLA);
+	int size_leido = status.Get_count(MPI_CHAR);
+	string key(buffer,size_leido);
+	bool esta = mi_hashmap.member(key);
+	if (esta == true) {
+		MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_ENCONTRE);
+	} else {
+		MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
+	}
 }
 
 void trabajarArduamente() {
