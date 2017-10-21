@@ -31,4 +31,8 @@ void nodo_maximum();
 
 void nodo_quit();
 
+void nodo_member();
+
+void nodo_add();
+
 #endif  /* _NODO_H */
