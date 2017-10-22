@@ -98,9 +98,17 @@ static void maximum() {
         if(tag == TAG_TERMINE){
             nodos_restantes_por_terminar--;
         }else{
-            int size_leido = status.Get_count(MPI_CHAR);
-            string palabra(buffer,size_leido);
-            hashMapCentral->addAndInc(palabra);
+            unsigned int size_leido = status.Get_count(MPI_CHAR);
+            unsigned int inicio = 0;
+            while(inicio < size_leido){
+                unsigned int size=0;
+                while(buffer[inicio+size]!='\0' && inicio+size < size_leido){
+                    size++;
+                }
+                string palabra(buffer+inicio,size);
+                hashMapCentral->addAndInc(palabra);
+                inicio+=size+1;
+            }
         }
     }
     
@@ -137,7 +145,7 @@ static void member(string key) {
     for(unsigned int i=0;i < np-1; i++){
 		MPI::COMM_WORLD.Recv(NULL,0,MPI_CHAR,MPI_ANY_SOURCE,MPI_ANY_TAG,status);
 		int tag = status.Get_tag();
-        archivoLogConsola << "[" << timestamp() << "][consola] " << "nodo: " << status.Get_source() << " respondió: " << tag << endl;
+        //archivoLogConsola << "[" << timestamp() << "][consola] " << "nodo: " << status.Get_source() << " respondió: " << tag << endl;
 		if (tag == TAG_ENCONTRE) {
 			esta = true;
 		}

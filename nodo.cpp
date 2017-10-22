@@ -83,15 +83,26 @@ void nodo_maximum(){
     char buffer[BUFFER_SIZE];
     HashMap::iterator it = mi_hashmap.begin();
     trabajarArduamente();
+    size_t acumulado = 0;
     while(it != mi_hashmap.end()){
         string palabra = *it;
-        archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "Palabra " << palabra << endl;
-        strcpy(buffer,palabra.c_str());
         unsigned int tam = palabra.length();
-        MPI::COMM_WORLD.Send(buffer,tam,MPI_CHAR,RANK_CONSOLA,TAG_PALABRA);
+        if(acumulado + tam + 1 >= BUFFER_SIZE){
+            //mando lo que tengo en el buffer
+            MPI::COMM_WORLD.Send(buffer,acumulado,MPI_CHAR,RANK_CONSOLA,TAG_PALABRA);
+            acumulado=0;
+        }
+        strcpy(buffer+acumulado,palabra.c_str());
+        acumulado += tam;
+        buffer[acumulado]='\0';
+        acumulado++;
         it++;
     }
-    MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);    
+    if(acumulado > 0){
+        //mando lo que quedó finalmente en el buffer
+        MPI::COMM_WORLD.Send(buffer,acumulado,MPI_CHAR,RANK_CONSOLA,TAG_PALABRA);
+    }
+    MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
 }
 
 void nodo_add(){
@@ -107,7 +118,6 @@ void nodo_add(){
         string key(buffer,size_leido);
         archivoLog << "[" << timestamp() << "][nodo "<< mi_rank << "] " <<  "Agrego: '" << key << "' de tamaño: " << size_leido << endl;
         mi_hashmap.addAndInc(key);
-        //MPI::COMM_WORLD.Send(NULL,0,MPI_CHAR,RANK_CONSOLA,TAG_TERMINE);
 	}
 }
 
