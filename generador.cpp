@@ -29,7 +29,7 @@ void cargarArchivo(ostream& archivo, unsigned int cantPalabras, unsigned int can
 
 int main(int argc, char** argv) {
     if (argc != 8) {
-        cerr << "uso: " << argv[0] << " #archivos #palabrasMin #palabrasMax #letrasMin #letrasMax #semilla #directorio" << endl;
+        cerr << "uso: " << argv[0] << " #archivos #palabrasMin #palabrasMax #letrasMin #letrasMax semilla directorio" << endl;
         return 1;
     }
     unsigned int cantArchivos   = atoi(argv[1]);
