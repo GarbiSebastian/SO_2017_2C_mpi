@@ -28,8 +28,8 @@ void cargarArchivo(ostream& archivo, unsigned int cantPalabras, unsigned int can
 
 
 int main(int argc, char** argv) {
-    if (argc != 7) {
-        cerr << "uso: " << argv[0] << " #archivos #palabrasMin #palabrasMax #letrasMin #letrasMax #semilla" << endl;
+    if (argc != 8) {
+        cerr << "uso: " << argv[0] << " #archivos #palabrasMin #palabrasMax #letrasMin #letrasMax #semilla #directorio" << endl;
         return 1;
     }
     unsigned int cantArchivos   = atoi(argv[1]);
@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
     unsigned int cantLetrasMin  = atoi(argv[4]);
     unsigned int cantLetrasMax  = atoi(argv[5]);
     unsigned int semilla        = atoi(argv[6]);
+    string directorio = argv[7];
     
     srand(semilla);
     
@@ -46,7 +47,7 @@ int main(int argc, char** argv) {
     for(unsigned int i=0; i < cantArchivos; i++){
         ofstream archivo;
         char nombreArchivo[100];
-        sprintf(nombreArchivo,"archivos/palabras-%04u",i);
+        sprintf(nombreArchivo,"%s/palabras-%04u",directorio.c_str(),i);
         archivo.open(nombreArchivo);
         cantPalabras = rand() % (cantPalMax-cantPalMin) + cantPalMin;
         cargarArchivo(archivo,cantPalabras,cantLetrasMin,cantLetrasMax);

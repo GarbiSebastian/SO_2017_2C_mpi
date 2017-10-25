@@ -56,4 +56,6 @@ nbdist/
 /archivos/palabras*
 /logs/log*
 /dist_hashmap
-generador
+/generador
+#/tests/archivos/tmp/
+#!/tests/archivos/tmp/.gitkeep

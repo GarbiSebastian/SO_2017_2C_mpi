@@ -17,7 +17,7 @@ HashMap mi_hashmap;
 unsigned int mi_rank;
 
 void nodo(unsigned int rank) {
-    printf("Soy un nodo. Mi rank es %u \n", rank);
+    //printf("Soy un nodo. Mi rank es %u \n", rank);
     mi_rank = rank;
     //LOG
     char nombreArchivoLog[100];

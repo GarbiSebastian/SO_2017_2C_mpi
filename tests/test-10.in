@@ -1,3 +1,3 @@
-load tests/archivos/palabras-2-1 tests/archivos/palabras-2-2 tests/archivos/palabras-2-3 tests/archivos/palabras-2-4
+load tests/archivos/palabras-2-1 tests/archivos/palabras-2-2 tests/archivos/palabras-2-3
 maximum
 q
