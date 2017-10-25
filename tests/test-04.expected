@@ -1,0 +1,10 @@
+Comandos disponibles:
+  load <arch_1> <arch_2> ... <arch_n>
+  addAndInc <string>
+  member <string>
+  maximum
+  q|quit
+> Agregado: agrego
+> Agregado: algunas
+> Agregado: palabras
+> Finalizamos ejecución

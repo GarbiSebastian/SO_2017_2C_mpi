@@ -1,0 +1,27 @@
+Comandos disponibles:
+  load <arch_1> <arch_2> ... <arch_n>
+  addAndInc <string>
+  member <string>
+  maximum
+  q|quit
+> El string <estas> no está
+> El string <palabras> no está
+> El string <no> no está
+> El string <deben> no está
+> El string <aparecer> no está
+> La listá esta procesada
+> El string <todas> está
+> El string <las> está
+> El string <palabras> está
+> El string <de> está
+> El string <este> está
+> El string <archivo> está
+> El string <deben> está
+> El string <aparecer> está
+> El string <con> está
+> El string <member> está
+> El string <sin> no está
+> El string <embargo> no está
+> El string <estas> no está
+> El string <no> no está
+> Finalizamos ejecución

@@ -1,0 +1,17 @@
+Comandos disponibles:
+  load <arch_1> <arch_2> ... <arch_n>
+  addAndInc <string>
+  member <string>
+  maximum
+  q|quit
+> Agregado: una
+> Agregado: prueba
+> Agregado: con
+> Agregado: add
+> Agregado: and
+> Agregado: inc
+> Agregado: y
+> Agregado: con
+> Agregado: maximum
+> El máximo es <con,2>
+> Finalizamos ejecución

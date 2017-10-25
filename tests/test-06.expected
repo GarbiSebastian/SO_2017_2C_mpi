@@ -1,0 +1,8 @@
+Comandos disponibles:
+  load <arch_1> <arch_2> ... <arch_n>
+  addAndInc <string>
+  member <string>
+  maximum
+  q|quit
+> El máximo es <,0>
+> Finalizamos ejecución

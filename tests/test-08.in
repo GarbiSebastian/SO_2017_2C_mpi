@@ -1,0 +1,21 @@
+member estas
+member palabras
+member no
+member deben
+member aparecer
+load tests/archivos/palabras-1
+member todas
+member las
+member palabras
+member de
+member este
+member archivo
+member deben
+member aparecer
+member con
+member member
+member sin
+member embargo
+member estas
+member no
+quit

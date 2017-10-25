@@ -1,0 +1,24 @@
+Comandos disponibles:
+  load <arch_1> <arch_2> ... <arch_n>
+  addAndInc <string>
+  member <string>
+  maximum
+  q|quit
+> El string <una> no está
+> Agregado: una
+> El string <prueba> no está
+> Agregado: prueba
+> El string <con> no está
+> Agregado: con
+> El string <una> está
+> Agregado: una
+> El string <palabra> no está
+> Agregado: palabra
+> El string <repetida> no está
+> Agregado: repetida
+> El string <repetida> está
+> El string <con> está
+> El string <una> está
+> El string <palabra> está
+> El string <prueba> está
+> Finalizamos ejecución
