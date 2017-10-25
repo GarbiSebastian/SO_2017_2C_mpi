@@ -16,6 +16,7 @@ $(BIN): $(SRCS)
 
 clean:
 	rm -f $(BIN)
+	rm -f generador
 
 new: clean all
 
